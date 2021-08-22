@@ -1,12 +1,13 @@
 class Compiler {
-  construct new(parsed) {
+  construct new(parsed, id) {
     _parsed = parsed
     _vars = []
     _lvl = 0
+    _id = id
   }
 
   getHeader() {
-    return "var t = \"\"\n"
+    return "var t%(_id) = \"\"\n"
   }
 
   getVarName(str) {
@@ -32,7 +33,7 @@ class Compiler {
 
     var vName = ""
     if (!def) { 
-      vName = "data%(nodesStr)" 
+      vName = "data%(_id)%(nodesStr)" 
     } else { 
       vName = nodes[0] + nodesStr
     } 
@@ -76,14 +77,14 @@ class Compiler {
         if (openS) {
           r = r + "%(st["VALUE"])"
         } else {
-          r = r + "\n%(getIndent())t = t + \"%(st["VALUE"])"
+          r = r + "\n%(getIndent())t%(_id) = t%(_id) + \"%(st["VALUE"])"
           openS = true
         }
       } else if (st["TYPE"] == "VAR") {
         if (openS) {
           r = r + "\%(%(getVar(st)))"
         } else {
-          r = r + "\n%(getIndent())t = t + %(getVar(st))"
+          r = r + "\n%(getIndent())t%(_id) = t%(_id) + %(getVar(st))"
         }
       } else if (st["TYPE"] == "FOR_LOOP") {
         closeS.call()

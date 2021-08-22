@@ -3,15 +3,19 @@ import "./parser" for Parser
 import "./compiler" for Compiler
 import "meta" for Meta
 
+var ID = 0
+
 class Wrenja {
   construct template(str) {
     var tokens = (Lexer.new(str)).tokenize()
     var parsed = (Parser.new(tokens)).parse()
-    _compiled = (Compiler.new(parsed)).compile()
+    _compiled = (Compiler.new(parsed, ID)).compile()
+    _id = ID
+    ID = ID + 1
   }
 
   stringify(obj) {
-    if (obj is Num || obj is Bool || obj is Null) {
+    if (obj is Num || obj is Bool) {
       return obj.toString
     } else if (obj is String) {
       var substrings = []
@@ -36,6 +40,8 @@ class Wrenja {
       }
 
       return "\"" + substrings.join("") + "\""
+    } else if (obj is Null) {
+      return "\"\""
     } else if (obj is List) {
       var substrings = obj.map { |o| stringify(o) }
       return "[" + substrings.join(",") + "]"
@@ -48,7 +54,7 @@ class Wrenja {
   }
 
   render(data) {
-    var templt = "var data = %(stringify(data))\n" + _compiled + "\nreturn t"
+    var templt = "var data%(_id) = %(stringify(data))\n" + _compiled + "\nreturn t%(_id)"
     return Meta.compile(templt).call()
   }
 

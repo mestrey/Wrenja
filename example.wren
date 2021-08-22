@@ -17,6 +17,7 @@ Maps: {$ for user in users $}
 
 ")
 
+System.print("Template 1:")
 System.print(template1.render({
   "title": "Wrenja", 
   "subtitle": "A templating engine",
@@ -32,18 +33,7 @@ System.print(template1.render({
   ]
 }))
 
+System.print("\nTemplate 2:")
+var template2 = Wrenja.template("")
 
-
-// var test = Wrenja.template("    
-//   <h1>{{ title|uppercase }}</h1>
-//   <h1>{{ desc|reverse|slice(2,3,'hehe')|uppercase }}</h1>
-//   <ul>
-//     {# loop through users #}
-//     {$ for user in users $}
-//       <li>{{ user.name }}</li>
-//     {$ endfor $}
-//     {$ for i in 0...1 $}
-//       <li>{{ i }}</li>
-//     {$ endfor $}    
-//   </ul>
-// ")
+System.print(template2.render(null))
