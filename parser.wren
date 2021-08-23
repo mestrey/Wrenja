@@ -7,12 +7,29 @@ class Statements {
 
     if (elems[0] == "for") {
       return forStatement(elems)
+    } else if (elems[0] == "if") { 
+      return ifStatement(elems, "IF")
+    } else if (elems[0] == "else") { 
+      return { "TYPE": "ELSE" } 
+    } else if (elems[0] == "elif") { 
+      return ifStatement(elems, "ELIF")
+    } else if (elems[0] == "endif") { 
+      return { "TYPE": "END_IF" } 
     } else if (elems[0] == "endfor") { 
       return { "TYPE": "END_FOR" } 
     } else {
       Console.error("Undefined statement `%(elems[0])`", null)
       return null
     }
+  }
+
+  static ifStatement(elems, t) {
+    if (elems.count < 2) {
+      Console.error("Syntax error with %(t) condition", elems.join(" "))
+      return null
+    }
+
+    return { "TYPE": t, "COND": elems[1...elems.count].join(" ") } 
   }
 
   static forStatement(elems) {

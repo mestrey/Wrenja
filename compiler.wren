@@ -1,7 +1,12 @@
 class Compiler {
+  static functions {{
+    "toString": ""
+  }}
+
   construct new(parsed, id) {
     _parsed = parsed
     _vars = []
+    _fns = []
     _lvl = 0
     _id = id
   }
@@ -42,7 +47,12 @@ class Compiler {
   }
 
   getVar(v) {
-    return getVarName(v["NAME"])
+    var vName = getVarName(v["NAME"])
+    var r = ""
+    // BUILT IN FUNCTIONS
+    // ADDED ONLY IF ARE USED BY THE TEMPLATE
+    System.print(v)
+    return 
   }
 
   getIndent() {
@@ -59,7 +69,7 @@ class Compiler {
   }
 
   compile() {
-    var r = getHeader()
+    var r = ""
     var openS = false
     
     var lvlVars = {}
@@ -71,8 +81,24 @@ class Compiler {
       }
     }
 
+    var goDown = Fn.new { |n|
+      closeS.call()
+      for (v in lvlVars[_lvl]) {
+        removeFromVars(v)
+      }
+      lvlVars[_lvl] = []
+      _lvl = _lvl - 1
+      r = r + "%(getIndent())}"
+
+      if (n) {
+        r = r + "\n"
+      }
+    }    
+
     var i = 0
     for (st in _parsed) {
+      if (lvlVars[_lvl] == null) { lvlVars[_lvl] = []}
+      if (lvlVars[_lvl + 1] == null) { lvlVars[_lvl + 1] = []}
       if (st["TYPE"] == "TEXT") {
         if (openS) {
           r = r + "%(st["VALUE"])"
@@ -84,25 +110,28 @@ class Compiler {
         if (openS) {
           r = r + "\%(%(getVar(st)))"
         } else {
-          r = r + "\n%(getIndent())t%(_id) = t%(_id) + %(getVar(st))"
+          r = r + "\n%(getIndent())t%(_id) = t%(_id) + %(getVar(st))\n"
         }
+      } else if (st["TYPE"] == "ELSE") {
+        goDown.call(false)
+        r = r + " else {"
+        _lvl = _lvl + 1
+      } else if (st["TYPE"] == "ELIF") {
+        goDown.call(false)
+        r = r + " else if (%(st["COND"])) {"
+        _lvl = _lvl + 1
+      } else if (st["TYPE"] == "IF") {
+        closeS.call()
+        r = r + "\n%(getIndent())if (%(st["COND"])) {"
+        _lvl = _lvl + 1
       } else if (st["TYPE"] == "FOR_LOOP") {
         closeS.call()
-
         r = r + "\n%(getIndent())for (%(st["I_NAME"]) in %(getVarName(st["RANGE"]))) {"
         _vars.add(st["I_NAME"])
         _lvl = _lvl + 1
-        if (lvlVars[_lvl] == null) { lvlVars[_lvl] = []}
         lvlVars[_lvl].add(st["I_NAME"])
-      } else if (st["TYPE"] == "END_FOR") {
-        closeS.call()
-
-        for (v in lvlVars[_lvl]) {
-          removeFromVars(v)
-        }
-        lvlVars[_lvl] = []
-        _lvl = _lvl - 1
-        r = r + "%(getIndent())}"
+      } else if (st["TYPE"] == "END_FOR" || st["TYPE"] == "END_IF") {
+        goDown.call(true)
       }
 
       if (i == _parsed.count - 1) {
@@ -116,6 +145,6 @@ class Compiler {
       i = i + 1
     }
 
-    return r
+    return getHeader() + r
   }
 }
