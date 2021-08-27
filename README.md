@@ -1,7 +1,5 @@
 # Wrenja
 
-<img align="right" width="140" height="120" title="wrenja" src="https://downloader.disk.yandex.ru/preview/a30398426ab73bc6fbba42a11d5e9b064d6678406bf7e858c3fc5d205efc9634/61226dc4/LS0vpQINelzUFT9MTU1T9-IVsL2oQm1Dxji0riWQ1MSaxT-3DusXi5wZnB64EVUViXzZ0BQAcjK_yVatKPWrZg%3D%3D?uid=0&filename=wrenja_logo.png&disposition=inline&hash=&limit=0&content_type=image%2Fpng&owner_uid=0&tknv=v2&size=2048x2048">
-     
 Wrenja is a templating engine for Wren with a Jinja / Twig syntax.
 
 It is written completely in wren.
@@ -67,5 +65,7 @@ For the moment, you can use variables `{{ map.variable.name }}`, comments `{# co
 - ... and many many more
 
 # Contributing
+
+(see the dev branch for upcoming features)
 
 Go ahead, what are you waiting? 
